@@ -1,6 +1,7 @@
 package lineNotify
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"os"
@@ -32,7 +33,7 @@ func Auth(state string) string {
 	return "https://notify-bot.line.me/oauth/authorize?response_type=code&scope=notify&response_mode=form_post&client_id=" + clientID + "&redirect_uri=" + callbackURL + "&state=" + state
 }
 
-func OauthToken(code string) bool {
+func OauthToken(code string) string {
 	// get access_token
 	postURL := "https://notify-bot.line.me/oauth/token"
 	postParams := url.Values{}
@@ -43,11 +44,18 @@ func OauthToken(code string) bool {
 	postParams.Add("client_secret", os.Getenv("LINE_NOTIFY_CLIENT_SECRET"))
 
 	resp, err := http.PostForm(postURL, postParams)
+	accessToken := "none"
+
 	if err != nil {
 		// handle error
+	} else {
+		var otResponse OauthTokenResponseStruct
+		json.NewDecoder(resp.Body).Decode(&otResponse)
+
+		accessToken = otResponse.access_token
 	}
 
 	defer resp.Body.Close()
 
-	return false
+	return accessToken
 }

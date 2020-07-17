@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"lineNotify/service"
 	"lineNotify/service/lineNotify"
 	"net/http"
@@ -10,8 +11,6 @@ import (
 type CallbackRequestStuct struct {
 	Code string `json:"code"`
 }
-
-type 
 
 func LineNotifyAuth(w http.ResponseWriter, r *http.Request) {
 	// http.Redirect(w, r, lineNotify.Auth("none"), http.StatusSeeOther)
@@ -28,8 +27,13 @@ func LineNotifyCallback(w http.ResponseWriter, r *http.Request) {
 	service.GetRequestParams(r, &requestParams)
 
 	// 取得 code
-	oauth = lineNotify.OauthToken(requestParams.Code)
+	oauth := lineNotify.OauthToken(requestParams.Code)
 
+	if oauth != "none" {
+
+	}
+
+	fmt.Println("[oauth] accessToken:", oauth)
 }
 
 func LineNotifySendMessage(w http.ResponseWriter, r *http.Request) {
