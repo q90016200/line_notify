@@ -74,11 +74,11 @@ func LineNotifySendNotify(w http.ResponseWriter, r *http.Request) {
 }
 
 type Res struct {
-	Status int16       `json:"status"`
+	Status int         `json:"status"`
 	Data   interface{} `json:"data"`
 }
 
-func Response(w http.ResponseWriter, status int16, data interface{}) {
+func Response(w http.ResponseWriter, status int, data interface{}) {
 	res := Res{
 		Status: status,
 		Data:   data,
@@ -87,6 +87,6 @@ func Response(w http.ResponseWriter, status int16, data interface{}) {
 	j, _ := json.Marshal(res)
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	w.WriteHeader(int(status))
+	w.WriteHeader(status)
 	w.Write(j)
 }
