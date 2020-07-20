@@ -28,5 +28,5 @@ func lineNotify(router *mux.Router) {
 	lineNotify := router.PathPrefix("/lineNotify").Subrouter()
 	lineNotify.HandleFunc("/auth", api.LineNotifyAuth).Methods("GET")
 	lineNotify.HandleFunc("/callback", api.LineNotifyCallback).Methods("POST")
-	lineNotify.HandleFunc("/message", api.LineNotifySendMessage).Methods("POST")
+	lineNotify.HandleFunc("/notify", api.LineNotifySendNotify).Methods("POST")
 }

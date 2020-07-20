@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -29,4 +30,15 @@ func GetRequestParams(r *http.Request, requestParams interface{}) {
 
 		json.Unmarshal(rpJson, &requestParams)
 	}
+}
+
+/**
+* 檢查檔案是否存在
+ */
+func CheckFileExist(fileName string) bool {
+	_, err := os.Stat(fileName)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return true
 }

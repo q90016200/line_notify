@@ -6,6 +6,7 @@ import (
 	"lineNotify/service"
 	"lineNotify/service/lineNotify"
 	"net/http"
+	"os"
 )
 
 type CallbackRequestStuct struct {
@@ -15,10 +16,10 @@ type CallbackRequestStuct struct {
 func LineNotifyAuth(w http.ResponseWriter, r *http.Request) {
 	// http.Redirect(w, r, lineNotify.Auth("none"), http.StatusSeeOther)
 	data := make(map[string]interface{})
-	err := make(map[string]interface{})
+	// err := make(map[string]interface{})
 
 	data["redirect"] = lineNotify.Auth("none")
-	Response(w, data, err)
+	Response(w, 200, data)
 }
 
 func LineNotifyCallback(w http.ResponseWriter, r *http.Request) {
@@ -26,34 +27,66 @@ func LineNotifyCallback(w http.ResponseWriter, r *http.Request) {
 	requestParams := CallbackRequestStuct{}
 	service.GetRequestParams(r, &requestParams)
 
+	// 撤銷 access token
+	ln := lineNotify.NewLineNotify()
+	ln.Revoke()
+
 	// 取得 code
 	oauth := lineNotify.OauthToken(requestParams.Code)
 
 	if oauth != "none" {
-
+		// 寫入 file lineNotifyAccessToken.txt
+		fileName := os.Getenv("LINE_NOTIFY_TOKEN_FILE")
+		f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("write")
+			f.Write([]byte(oauth))
+		}
+		f.Close()
 	}
 
 	fmt.Println("[oauth] accessToken:", oauth)
 }
 
-func LineNotifySendMessage(w http.ResponseWriter, r *http.Request) {
+type SendNotifyRequestParams struct {
+	Message string
+}
+
+func LineNotifySendNotify(w http.ResponseWriter, r *http.Request) {
+	// 處理請求
+	requestParams := SendNotifyRequestParams{}
+	service.GetRequestParams(r, &requestParams)
+
+	ln := lineNotify.NewLineNotify()
+	notify := ln.Notify(requestParams.Message)
+
+	data := make(map[string]interface{})
+	data["message"] = requestParams.Message
+
+	if !notify {
+		Response(w, 400, data)
+	} else {
+		Response(w, 200, data)
+	}
 
 }
 
 type Res struct {
-	Data *interface{} `json:"data"`
-	Err  *interface{} `json:"error"`
+	Status int16       `json:"status"`
+	Data   interface{} `json:"data"`
 }
 
-func Response(w http.ResponseWriter, data interface{}, err interface{}) {
+func Response(w http.ResponseWriter, status int16, data interface{}) {
 	res := Res{
-		Data: &data,
-		Err:  &err,
+		Status: status,
+		Data:   data,
 	}
 
 	j, _ := json.Marshal(res)
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	w.WriteHeader(200)
+	w.WriteHeader(int(status))
 	w.Write(j)
 }

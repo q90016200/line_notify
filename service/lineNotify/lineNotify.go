@@ -2,24 +2,38 @@ package lineNotify
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"lineNotify/service"
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
 type Notify struct {
-	accessToken string
+	AccessToken string
 }
 
 type OauthTokenResponseStruct struct {
-	access_token string
+	Access_token string
 }
 
 // 用來建構 Notify 的假建構子
-func LineNotify(accessToken string) (notify *Notify) {
-	notify = &Notify{accessToken: accessToken}
+func NewLineNotify() (notify *Notify) {
+	fileExists := service.CheckFileExist(os.Getenv("LINE_NOTIFY_TOKEN_FILE"))
+	accessToken := "none"
+	if fileExists {
+		f, _ := os.Open(os.Getenv("LINE_NOTIFY_TOKEN_FILE"))
+		defer f.Close()
+		fd, _ := ioutil.ReadAll(f)
+
+		accessToken = string(fd)
+	}
+
+	notify = &Notify{AccessToken: accessToken}
 
 	// 這裡會回傳一個型態是 *Notify 建構體的 notify 變數
 	return notify
@@ -51,11 +65,79 @@ func OauthToken(code string) string {
 	} else {
 		var otResponse OauthTokenResponseStruct
 		json.NewDecoder(resp.Body).Decode(&otResponse)
-
-		accessToken = otResponse.access_token
+		accessToken = otResponse.Access_token
 	}
 
 	defer resp.Body.Close()
 
 	return accessToken
+}
+
+type RevokeResponse struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
+// 撤銷 Access Token
+func (notify *Notify) Revoke() {
+	postURL := "https://notify-api.line.me/api/revoke"
+	postParams := url.Values{}
+	requestBody := strings.NewReader(postParams.Encode())
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", postURL, requestBody)
+	if err != nil {
+		// handle error
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Authorization", "Bearer "+notify.AccessToken)
+
+	resp, _ := client.Do(req)
+
+	defer resp.Body.Close()
+
+	var revokeResponse RevokeResponse
+	json.NewDecoder(resp.Body).Decode(&revokeResponse)
+
+	fmt.Println(revokeResponse)
+}
+
+type NotifyResponse struct {
+	Status  int
+	Message string
+}
+
+// 傳送訊息
+func (notify *Notify) Notify(message string) bool {
+	notifyStatus := false
+	postURL := "https://notify-api.line.me/api/notify"
+	postParams := url.Values{
+		"message": {message},
+	}
+	requestBody := strings.NewReader(postParams.Encode())
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", postURL, requestBody)
+	if err != nil {
+		// handle error
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Authorization", "Bearer "+notify.AccessToken)
+
+	resp, _ := client.Do(req)
+
+	defer resp.Body.Close()
+
+	var notifyResponse NotifyResponse
+	json.NewDecoder(resp.Body).Decode(&notifyResponse)
+
+	// fmt.Println("notify at: ", notify.AccessToken)
+	fmt.Println("notify: ", notifyResponse)
+	fmt.Println("notify message: ", message)
+
+	if notifyResponse.Status == 200 {
+		notifyStatus = true
+	}
+
+	return notifyStatus
 }
