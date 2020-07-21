@@ -29,4 +29,5 @@ func lineNotify(router *mux.Router) {
 	lineNotify.HandleFunc("/auth", api.LineNotifyAuth).Methods("GET")
 	lineNotify.HandleFunc("/callback", api.LineNotifyCallback).Methods("POST")
 	lineNotify.HandleFunc("/notify", api.LineNotifySendNotify).Methods("POST")
+	lineNotify.HandleFunc("/", api.LineNotifyIndex).Methods("GET")
 }

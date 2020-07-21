@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"lineNotify/service"
 	"lineNotify/service/lineNotify"
 	"net/http"
@@ -71,6 +72,16 @@ func LineNotifySendNotify(w http.ResponseWriter, r *http.Request) {
 		Response(w, 200, data)
 	}
 
+}
+
+func LineNotifyIndex(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("views/index.html")
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+
+	fmt.Println("LineNotifyIndex")
+	t.Execute(w, "data goes here")
 }
 
 type Res struct {
