@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"html/template"
 	"lineNotify/service"
-	"lineNotify/service/lineNotify"
 	"net/http"
 	"os"
+
+	"github.com/q90016200/line_notify_package/lineNotify"
 )
 
 type CallbackRequestStuct struct {
@@ -53,12 +54,21 @@ func LineNotifyCallback(w http.ResponseWriter, r *http.Request) {
 
 type SendNotifyRequestParams struct {
 	Message string
+	Type    string
 }
 
 func LineNotifySendNotify(w http.ResponseWriter, r *http.Request) {
 	// 處理請求
 	requestParams := SendNotifyRequestParams{}
 	service.GetRequestParams(r, &requestParams)
+
+	fmt.Println("test:", requestParams.Type)
+
+	if requestParams.Type != "schedule" {
+
+	} else {
+
+	}
 
 	ln := lineNotify.NewLineNotify()
 	notify := ln.Notify(requestParams.Message)
