@@ -23,7 +23,7 @@ URL : /lineNotify/notify
 
 METHOD: POST
 
-| 參數名 | 類型 | 選填 | 描述 |
+| 參數名 | 類型 | 必填 | 描述 |
 | ------- | -------- | --- | --------------------------- |
 | message | string | Y | 訊息 |
 | access_token | string | N | 發送 LINE 通知 需要的 token ，若不填寫會使用 auth 保存的 access_token 進行使用 |
