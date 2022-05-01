@@ -30,12 +30,11 @@ func LineNotifyCallback(w http.ResponseWriter, r *http.Request) {
 	service.GetRequestParams(r, &requestParams)
 
 	// 撤銷 access token
-	ln := lineNotify.NewLineNotify()
+	ln := lineNotify.NewLineNotify("")
 	ln.Revoke()
 
 	// 取得 code
 	oauth := lineNotify.OauthToken(requestParams.Code)
-
 	if oauth != "none" {
 		// 寫入 file lineNotifyAccessToken.txt
 		fileName := os.Getenv("LINE_NOTIFY_TOKEN_FILE")
@@ -53,8 +52,8 @@ func LineNotifyCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 type SendNotifyRequestParams struct {
-	Message string
-	Type    string
+	Message string `json:"message"`
+	AccessToken string `json:"access_token"`
 }
 
 func LineNotifySendNotify(w http.ResponseWriter, r *http.Request) {
@@ -62,15 +61,12 @@ func LineNotifySendNotify(w http.ResponseWriter, r *http.Request) {
 	requestParams := SendNotifyRequestParams{}
 	service.GetRequestParams(r, &requestParams)
 
-	fmt.Println("test:", requestParams.Type)
-
-	if requestParams.Type != "schedule" {
-
-	} else {
-
+	accessToken := ""
+	if requestParams.AccessToken != "" {
+		accessToken = requestParams.AccessToken
 	}
 
-	ln := lineNotify.NewLineNotify()
+	ln := lineNotify.NewLineNotify(accessToken)
 	notify := ln.Notify(requestParams.Message)
 
 	data := make(map[string]interface{})

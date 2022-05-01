@@ -13,7 +13,7 @@ func GetRequestParams(r *http.Request, requestParams interface{}) {
 
 	contentType := r.Header.Get("Content-type")
 
-	if contentType == "application/json" {
+	if contentType == "｀application/json" {
 		json.NewDecoder(r.Body).Decode(&requestParams)
 	} else if strings.Index(contentType, "application/x-www-form-urlencoded") != -1 {
 		rp := make(map[string]interface{})
@@ -23,7 +23,7 @@ func GetRequestParams(r *http.Request, requestParams interface{}) {
 		}
 
 		rpJson, _ := json.Marshal(rp)
-		fmt.Println("service rp:", string(rpJson))
+		fmt.Println("requestParams:", string(rpJson))
 
 		// reader := strings.NewReader(string(rpJson))
 		// json.NewDecoder(reader).Decode(&requestParams)
@@ -32,9 +32,7 @@ func GetRequestParams(r *http.Request, requestParams interface{}) {
 	}
 }
 
-/**
-* 檢查檔案是否存在
- */
+// CheckFileExist /**
 func CheckFileExist(fileName string) bool {
 	_, err := os.Stat(fileName)
 	if os.IsNotExist(err) {

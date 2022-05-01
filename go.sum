@@ -4,3 +4,5 @@ github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
 github.com/q90016200/line_notify_package v1.0.0 h1:tQHfBb0b9qU/ow8cD2yFL9iULZ6dP/3qVhCTMYJ8v7U=
 github.com/q90016200/line_notify_package v1.0.0/go.mod h1:WlkdZurGIfSlPeuFhdgvMUGb4uO47seRcaKhFKRguGE=
+github.com/q90016200/line_notify_package v1.1.0 h1:s/nPjIS52K21d+kNWzvc9ips4JNNeD2UrGLKcDEaC/4=
+github.com/q90016200/line_notify_package v1.1.0/go.mod h1:WlkdZurGIfSlPeuFhdgvMUGb4uO47seRcaKhFKRguGE=
