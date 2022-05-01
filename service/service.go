@@ -13,7 +13,7 @@ func GetRequestParams(r *http.Request, requestParams interface{}) {
 
 	contentType := r.Header.Get("Content-type")
 
-	if contentType == "｀application/json" {
+	if contentType == "application/json" {
 		json.NewDecoder(r.Body).Decode(&requestParams)
 	} else if strings.Index(contentType, "application/x-www-form-urlencoded") != -1 {
 		rp := make(map[string]interface{})
